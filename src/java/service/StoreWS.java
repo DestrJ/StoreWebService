@@ -142,8 +142,8 @@ public class StoreWS {
         client.remove(id.toString());
     }
     
-    @WebMethod(operationName = "addCapacitor")
-    public void addResistor(@WebParam(name = "capacitor")Resistor resistor){
+    @WebMethod(operationName = "addResistor")
+    public void addResistor(@WebParam(name = "resistor")Resistor resistor){
         OrderClient client = new OrderClient();
         client.create_XML(resistor);      
     }
