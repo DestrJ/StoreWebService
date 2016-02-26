@@ -9,6 +9,8 @@ import entities.Capacitor;
 import entities.Orders;
 import entities.Resistor;
 import entities.User;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
@@ -177,14 +179,103 @@ public class StoreWS {
         client.remove(id.toString());
     }
     
-//    @WebMethod(operationName = "sortByAscendingCapacitorPrice")
-//    public List<User> sortByAscendingCapacitorPrice(@WebParam(name = "users") List<User> users){
-//        boolean flag = true;   
-//          
-//        
-//        
-//        return null;
-//    }
+    @WebMethod(operationName = "checkAuthorization")
+    public User checkAuthorization(@WebParam(name = "user")User user){
+        List<User> users = getAllUsers();
+        for(int i=0; i<users.size(); i++){
+            if(users.get(i).getName().equals(user.getName())){
+                if(users.get(i).getPassword().equals(user.getPassword())){
+                    return users.get(i);
+                }
+            }
+        }        
+        return null;
+    }
     
+    @WebMethod(operationName = "sortByAscendingCapacitorPrice")
+    public List<Capacitor> sortByAscendingCapacitorPrice(){
+        List<Capacitor> capacitors = getAllCapacitors();
+        boolean flag = true;   
+        while(flag){            
+            flag = false;
+            for(int i=0; i<capacitors.size()-1; i++){
+                if(capacitors.get(i).getPrice()>capacitors.get(i+1).getPrice()){
+                    Collections.swap(capacitors, i, i+1);
+                    flag = true;
+                }
+            }
+        }         
+        return capacitors;
+    }
+    
+    @WebMethod(operationName = "sortByDescendingCapacitorPrice")
+    public List<Capacitor> sortByDescendingCapacitorPrice(){
+        List<Capacitor> capacitors = getAllCapacitors();
+        boolean flag = true;   
+        while(flag){            
+            flag = false;
+            for(int i=0; i<capacitors.size()-1; i++){
+                if(capacitors.get(i).getPrice()<capacitors.get(i+1).getPrice()){
+                    Collections.swap(capacitors, i, i+1);
+                    flag = true;
+                }
+            }
+        }         
+        return capacitors;
+    }
+    
+    @WebMethod(operationName = "sortByDescendingCapacitorCap")
+    public List<Capacitor> sortByDescendingCapacitorCap(){
+        List<Capacitor> capacitors = getAllCapacitors();
+        boolean flag = true;   
+        while(flag){            
+            flag = false;
+            for(int i=0; i<capacitors.size()-1; i++){
+                if(capacitors.get(i).getCapacity()<capacitors.get(i+1).getCapacity()){
+                    Collections.swap(capacitors, i, i+1);
+                    flag = true;
+                }
+            }
+        }         
+        return capacitors;
+    }
+    
+    @WebMethod(operationName = "sortByAscendingCapacitorCap")
+    public List<Capacitor> sortByAscendingCapacitorCap(){
+        List<Capacitor> capacitors = getAllCapacitors();
+        boolean flag = true;   
+        while(flag){            
+            flag = false;
+            for(int i=0; i<capacitors.size()-1; i++){
+                if(capacitors.get(i).getCapacity()>capacitors.get(i+1).getCapacity()){
+                    Collections.swap(capacitors, i, i+1);
+                    flag = true;
+                }
+            }
+        }         
+        return capacitors;
+    }
+    
+    @WebMethod(operationName = "buyCapacitor")
+    public boolean buyCapacitor(@WebParam(name = "idCapacitor")Integer idCap,
+                                @WebParam(name = "idUser")Integer idUser,
+                                @WebParam(name = "capacitorCount")Integer count){
+        Capacitor capacitor = getCapacitor(idCap);
+        User user = getUser(idUser);
+        if((capacitor.getCount()>0)&&(capacitor.getCount()>count)){
+            Orders order = new Orders();
+            order.setUserId(user.getId());
+            order.setUserName(user.getName());
+            order.setProductId(capacitor.getId());
+            order.setProductName(capacitor.getName());
+            order.setPrice(capacitor.getPrice()*count);
+            order.setCount(capacitor.getCount()-count);
+            addOrder(order);
+            capacitor.setCount(capacitor.getCount()-count);
+            updateCapacitor(capacitor.getId(), capacitor);
+            return true;
+        }
+        return false;
+    }
     
 }
