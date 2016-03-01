@@ -269,7 +269,7 @@ public class StoreWS {
             order.setProductId(capacitor.getId());
             order.setProductName(capacitor.getName());
             order.setPrice(capacitor.getPrice()*count);
-            order.setCount(capacitor.getCount()-count);
+            order.setCount(count);
             addOrder(order);
             capacitor.setCount(capacitor.getCount()-count);
             updateCapacitor(capacitor.getId(), capacitor);
